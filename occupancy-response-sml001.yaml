@@ -20,6 +20,7 @@ blueprint:
     Turn on light(s) when occupancy detected and off when unoccupied.
     Uses a different brightness at night
     Configured with schedule entities which allow for co-ordination with other motion sensors
+    Optional use of an input booleam to control if the motion sensor is enabled, on is enabled
     Optionally, choose a TV and the occupancy sensor will be ignored when the TV is on
   domain: automation
   input:
@@ -133,10 +134,10 @@ blueprint:
           step: 100
           mode: box
           unit_of_measurement: "Kelvin"
-    disable_entity:
+    enable_entity:
       name: Input Boolean to use for disabling sensor
       description: >
-        Set to an input_boolean. If the input_boolean is in the 'on' state
+        Set to an input_boolean. If the input_boolean is in the 'off' state
         then the occupancy sensor will be disabled
       default: {}
       selector:
@@ -160,7 +161,7 @@ blueprint:
 #
 variables:
   ieee_id: !input ieee_id
-  disable_entity: !input disable_entity
+  enable_entity: !input enable_entity
   media_entity: !input media_entity
 
 # Trigger mode
@@ -180,7 +181,7 @@ condition:
   # Using a template allows us to cater for either of these entities being "None"
   - alias: "Exit if sensor is disabled"
     condition: template
-    value_template: "{{ True if not disable_entity else is_state(disable_entity.entity_id, 'off') }}"
+    value_template: "{{ True if not enable_entity else is_state(enable_entity.entity_id, 'on') }}"
   - alias: "Exit if media player on"
     condition: template
     value_template: "{{ True if not media_entity else is_state(media_entity.entity_id, 'off') }}"
